@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import isEmpty from 'lodash';
 import connect from 'react-redux/es/connect/connect';
 import { createStructuredSelector } from 'reselect';
+import dompurify from 'dompurify';
 
 import { selectFetchingShow, selectEpisodes } from './selectors';
 import { fetchShow, fetchEpisodes } from './actions';
@@ -9,6 +10,8 @@ import { Wrapper, Title, Cover, Summary, Description, BackLink } from './compone
 
 function Episode(props) {
   const { episodes, fetchingShow, fetchShow, fetchEpisodes } = props;
+  const sanitizer = dompurify.sanitize;
+
   useEffect(() => {
     if(isEmpty(episodes) && !fetchingShow) {
       fetchShow();
@@ -25,9 +28,9 @@ function Episode(props) {
       <BackLink to="/">&#8678; Back</BackLink>
       <Title>{episode.name}</Title>
       <Summary>
-      <Cover src={episode.image.medium}/>
+        {episode.image && <Cover src={episode.image.medium}/>}
         <Description>
-          <div dangerouslySetInnerHTML={{__html:episode.summary}} />
+          <div dangerouslySetInnerHTML={{__html:sanitizer(episode.summary)}} />
         </Description>
       </Summary>
     </Wrapper>
